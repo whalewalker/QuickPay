@@ -1,9 +1,9 @@
 package com.quickpay.security;
 
 
+import com.quickpay.data.model.User;
 import com.quickpay.data.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,8 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Transactional
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException(format("User not found with email %s", email)));
+    public User loadUserByUsername(String accountNumber) throws UsernameNotFoundException {
+        return userRepository.findUserByAccountNumber(accountNumber).orElseThrow(
+                () -> new UsernameNotFoundException(format("User not found with account number %s", accountNumber)));
     }
 }

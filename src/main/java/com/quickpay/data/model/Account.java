@@ -26,5 +26,23 @@ public class Account implements Serializable {
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private User user;
+
+    public void deposit(double amount) {
+        this.balance += amount;
+    }
+
+    public boolean withdraw(double amount) {
+        if (this.balance >= amount) {
+            this.balance -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    public void transfer(Account destinationAccount, double amount) {
+        if (withdraw(amount)) {
+            destinationAccount.deposit(amount);
+        }
+    }
 }
 

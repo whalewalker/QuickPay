@@ -66,7 +66,7 @@ class UserControllerTest {
 
         User newUser = createUser(userDTO);
 
-        when(userService.signup(any(UserDTO.class))).thenReturn(createUserResponse(newUser));
+        when(userService.createUser(any(UserDTO.class))).thenReturn(createUserResponse(newUser));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/quick-pay/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -79,9 +79,9 @@ class UserControllerTest {
         ResponseDTO responseDTO = objectMapper.readValue(responseContent, ResponseDTO.class);
 
         assertTrue(responseDTO.isSuccessful());
-        assertEquals("User signup successful", responseDTO.getMessage());
+        assertEquals("User is successfully created", responseDTO.message());
 
-        UserResponse userResponse = objectMapper.readValue(objectMapper.writeValueAsString(responseDTO.getData()), UserResponse.class);
+        UserResponse userResponse = objectMapper.readValue(objectMapper.writeValueAsString(responseDTO.data()), UserResponse.class);
         assertEquals(newUser.getName(), userResponse.getName());
         assertEquals(newUser.getEmail(), userResponse.getEmail());
         assertEquals(newUser.getBio(), userResponse.getBio());

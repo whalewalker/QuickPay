@@ -20,9 +20,9 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration}")
     private long expiration;
 
-    public String generateToken(String email) {
+    public String generateToken(String accountNumber) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email);
+        return createToken(claims, accountNumber);
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -36,7 +36,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 
-    public String extractEmail(String jwtToken) {
+    public String extractAccountNumber(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
     }
 
@@ -51,7 +51,7 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token, UserDetails user) {
-        final String email = extractEmail(token);
+        final String email = extractAccountNumber(token);
         return (email.equals(user.getUsername()) && !isTokenExpired(token));
     }
 
