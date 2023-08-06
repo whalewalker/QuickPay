@@ -3,17 +3,20 @@ package com.quickpay.Utils;
 import com.quickpay.data.dto.UserDTO;
 import com.quickpay.data.model.Account;
 import com.quickpay.data.model.Role;
+import com.quickpay.data.model.Transaction;
 import com.quickpay.data.model.User;
+import com.quickpay.web.response.TransactionResponse;
 import com.quickpay.web.response.UserResponse;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.quickpay.utils.Utils.formatDateTime;
+
 public class Helper {
-    public static Account createAccount(){
-        return Account.builder()
-                .accountNumber("0123456789")
-                .balance(0.0)
-                .build();
+    public static Account createAccount() {
+        return new Account("0123456789", BigDecimal.ZERO);
     }
 
     public static User createUser(UserDTO userDTO) {
@@ -37,6 +40,15 @@ public class Helper {
         userResponse.setAccountNumber(user.getAccount().getAccountNumber());
         userResponse.setBalance(user.getAccount().getBalance());
         return userResponse;
+    }
+
+    public static TransactionResponse createDepositResponse(Transaction transaction) {
+        return new TransactionResponse(createAccount().getAccountNumber(),
+                transaction.getTransactionType(),
+                transaction.getNarration(),
+                transaction.getAmount(),
+                transaction.getAccountBalance(),
+                formatDateTime(LocalDateTime.now()));
     }
 
 }

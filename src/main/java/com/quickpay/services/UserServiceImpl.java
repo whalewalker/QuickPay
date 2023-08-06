@@ -20,8 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static com.quickpay.utils.Utils.generateRandomValue;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +41,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Email is already registered");
         }
         Account account = createAccount();
-        UserResponse userResponse = mapper.map( createUser(userDTO, account), UserResponse.class);
+        UserResponse userResponse = mapper.map(createUser(userDTO, account), UserResponse.class);
         userResponse.setBalance(account.getBalance());
         userResponse.setAccountNumber(account.getAccountNumber());
         return userResponse;
@@ -58,28 +60,18 @@ public class UserServiceImpl implements UserService {
         return new LoginResponse(token);
     }
 
-    private  User createUser(UserDTO userDTO, Account account) {
+    private User createUser(UserDTO userDTO, Account account) {
         User user = mapper.map(userDTO, User.class);
         user.setPassword(passwordEncoder.encode(userDTO.password()));
         user.setRoles(List.of(new Role("ROLE_USER")));
         user.setAccount(account);
-       return userRepository.save(user);
+        return userRepository.save(user);
     }
 
     private Account createAccount() {
-        Account account = Account.builder()
-                .accountNumber(generateAccountNumber())
-                .balance(0.0)
-                .build();
+        Account account = new Account();
+        account.setAccountNumber(generateRandomValue("", 10));
+        account.setBalance(BigDecimal.ZERO);
         return accountRepository.save(account);
-    }
-
-    private String generateAccountNumber() {
-        StringBuilder accountNumberBuilder = new StringBuilder();
-        for (int i = 0; i < 10; i++) {
-            int digit = ThreadLocalRandom.current().nextInt(10);
-            accountNumberBuilder.append(digit);
-        }
-        return accountNumberBuilder.toString();
     }
 }

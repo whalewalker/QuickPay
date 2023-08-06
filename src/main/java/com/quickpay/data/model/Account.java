@@ -1,18 +1,23 @@
 package com.quickpay.data.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "accounts")
 @Getter
-@Builder
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
 public class Account implements Serializable {
     @Id
@@ -22,27 +27,32 @@ public class Account implements Serializable {
     @Column(unique = true, nullable = false)
     private String accountNumber;
 
-    private double balance;
+    private BigDecimal balance;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private User user;
 
-    public void deposit(double amount) {
-        this.balance += amount;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Transaction> transactions;
+
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updatedAt;
+
+    public Account(String accountNumber, BigDecimal balance) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
     }
 
-    public boolean withdraw(double amount) {
-        if (this.balance >= amount) {
-            this.balance -= amount;
-            return true;
-        }
-        return false;
+    public void addTransaction(Transaction newTransaction) {
+        if(transactions == null)
+            transactions = new ArrayList<>();
+        transactions.add(newTransaction);
     }
 
-    public void transfer(Account destinationAccount, double amount) {
-        if (withdraw(amount)) {
-            destinationAccount.deposit(amount);
-        }
-    }
 }
 

@@ -25,6 +25,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.math.BigDecimal;
+
 import static com.quickpay.Utils.Helper.createUser;
 import static com.quickpay.Utils.Helper.createUserResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,7 +87,7 @@ class UserControllerTest {
         assertEquals(newUser.getName(), userResponse.getName());
         assertEquals(newUser.getEmail(), userResponse.getEmail());
         assertEquals(newUser.getBio(), userResponse.getBio());
-        assertEquals(0.0, userResponse.getBalance());
+        assertEquals(BigDecimal.ZERO, userResponse.getBalance());
         assertEquals(10, userResponse.getAccountNumber().length());
     }
 }

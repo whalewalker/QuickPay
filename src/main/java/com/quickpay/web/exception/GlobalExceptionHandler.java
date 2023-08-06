@@ -19,8 +19,8 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ResponseDTO> handleBadRequestException(BadRequestException ex) {
+    @ExceptionHandler({BadRequestException.class, AccountException.class})
+    public ResponseEntity<ResponseDTO> handleException(Exception ex) {
         return ResponseEntity.badRequest().body(new ResponseDTO(false, ex.getMessage()));
     }
 
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseDTO> handleGenericException(Exception ex) {
         log.info("ERROR OCCUR ==> {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ResponseDTO(false, "An error occurred during createUser"));
+                .body(new ResponseDTO(false, "An error occurred"));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
