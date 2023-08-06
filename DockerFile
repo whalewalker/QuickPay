@@ -1,0 +1,16 @@
+# Use Amazon Corretto 17 as the base image
+FROM amazoncorretto:17
+
+LABEL mentainer="ohida2001@gmail.com"
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the executable JAR file into the container at /app
+COPY target/quick-pay-0.0.1-SNAPSHOT.jar /app/quick-pay.jar
+
+# Expose the port your Spring Boot application is listening on
+EXPOSE 8080
+
+# Run the JAR file when the container starts
+ENTRYPOINT ["java", "-jar", "quick-pay.jar"]
