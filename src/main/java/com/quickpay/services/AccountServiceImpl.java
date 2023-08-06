@@ -11,6 +11,7 @@ import com.quickpay.data.repository.AccountRepository;
 import com.quickpay.data.repository.TransactionRepository;
 import com.quickpay.specification.TransactionSpecification;
 import com.quickpay.web.exception.AccountException;
+import com.quickpay.web.exception.InsufficientBalanceException;
 import com.quickpay.web.response.TransactionResponse;
 import com.quickpay.web.response.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
 
         saveAccount(accountToFund);
 
-        return new TransactionResponse(accountNumber,
+        return new TransactionResponse(
                 TransactionType.DEPOSIT.toString(),
                 description,
                 depositDTO.amount(),
@@ -68,28 +69,30 @@ public class AccountServiceImpl implements AccountService {
         saveAccount(destinationAccount);
 
         return new TransactionResponse(
-                destinationAccount.getAccountNumber(),
                 TransactionType.TRANSFER.toString(),
                 "Wallet-to-wallet transfer",
                 transferDTO.amount(),
                 sourceAccount.getBalance(),
                 formatDateTime(LocalDateTime.now()),
-                sourceAccount.getAccountNumber(),
                 destinationAccount.getAccountNumber()
         );
     }
 
     @Override
     public Map<String, Object> getTransactionsDetails(Map<String, String> allRequestParams) {
-        FilterDTO filterDTO = new FilterDTO();
-        filterDTO.setTransactionType(getValueOrDefault(allRequestParams, "transactionType"));
-        filterDTO.setAccountNumber(getValueOrDefault(allRequestParams, "accountNumber"));
-        filterDTO.setTransactionId(getValueOrDefault(allRequestParams, "transactionId"));
-        filterDTO.setStartDate(parseLocalDateTime(allRequestParams.get("startDate")));
-        filterDTO.setEndDate(parseLocalDateTime(allRequestParams.get("endDate")));
-        filterDTO.setStartPage(Integer.parseInt(allRequestParams.getOrDefault("startPage", "0")));
-        filterDTO.setLength(Integer.parseInt(allRequestParams.getOrDefault("length", "10")));
-        filterDTO.setDraw(Integer.parseInt(allRequestParams.getOrDefault("draw", "1")));
+        FilterDTO filterDTO = new FilterDTO(
+                getValueOrDefault(allRequestParams, "transactionType"),
+                getValueOrDefault(allRequestParams, "transactionId"),
+                getValueOrDefault(allRequestParams, "accountNumber"),
+                parseLocalDateTime(allRequestParams.get("startDate")),
+                parseLocalDateTime(allRequestParams.get("endDate")),
+                Integer.parseInt(allRequestParams.getOrDefault("page", "0")),
+                Integer.parseInt(allRequestParams.getOrDefault("size", "10")),
+                Integer.parseInt(allRequestParams.getOrDefault("draw", "1")),
+                Integer.parseInt(allRequestParams.getOrDefault("start", "0")),
+                Integer.parseInt(allRequestParams.getOrDefault("length", "10")),
+                Integer.parseInt(allRequestParams.getOrDefault("startPage", "0"))
+        );
 
         return getTransactionsDetails(filterDTO);
     }
@@ -98,17 +101,17 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> response;
 
         Specification<Transaction> specification = Specification
-                .where(TransactionSpecification.withTransactionId(filterDTO.getTransactionId()))
-                .and(TransactionSpecification.withBetweenDate(filterDTO.getStartDate(), filterDTO.getEndDate()))
-                .and(TransactionSpecification.withTransactionType(filterDTO.getTransactionType()))
-                .and(TransactionSpecification.withAccount(filterDTO.getAccountNumber()));
+                .where(TransactionSpecification.withTransactionId(filterDTO.transactionId()))
+                .and(TransactionSpecification.withBetweenDate(filterDTO.startDate(), filterDTO.endDate()))
+                .and(TransactionSpecification.withTransactionType(filterDTO.transactionType()))
+                .and(TransactionSpecification.withAccount(filterDTO.accountNumber()));
 
         Page<Transaction> page = transactionRepository.findAll(specification,
-                PageRequest.of(filterDTO.getPage(), filterDTO.getSize(), Sort.by(Sort.Direction.DESC, "id")));
+                PageRequest.of(filterDTO.page(), filterDTO.size(), Sort.by(Sort.Direction.DESC, "id")));
 
         response = Map.of(
                 "data", page.getContent(),
-                "draw", filterDTO.getDraw(),
+                "draw", filterDTO.draw(),
                 "recordsTotal", page.getTotalElements(),
                 "recordsFiltered", page.getTotalElements()
         );
@@ -141,11 +144,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void debit(Account account, BigDecimal amount, String narration) {
-        account.setBalance(account.getBalance().subtract(amount));
-        Transaction debitTransaction = createTransaction(TransactionType.DEBIT.name(), narration, amount, account.getBalance());
+        BigDecimal newBalance = account.getBalance().subtract(amount);
+
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new InsufficientBalanceException("Insufficient balance to perform the debit operation");
+        }
+
+        account.setBalance(newBalance);
+        Transaction debitTransaction = createTransaction(TransactionType.DEBIT.name(), narration, amount, newBalance);
         Transaction savedDebitTransaction = saveTransaction(debitTransaction);
         account.addTransaction(savedDebitTransaction);
     }
+
 
     private void credit(Account account, BigDecimal amount, String narration) {
         account.setBalance(account.getBalance().add(amount));

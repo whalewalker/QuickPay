@@ -1,10 +1,7 @@
 package com.quickpay.Utils;
 
 import com.quickpay.data.dto.UserDTO;
-import com.quickpay.data.model.Account;
-import com.quickpay.data.model.Role;
-import com.quickpay.data.model.Transaction;
-import com.quickpay.data.model.User;
+import com.quickpay.data.model.*;
 import com.quickpay.web.response.TransactionResponse;
 import com.quickpay.web.response.UserResponse;
 
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.quickpay.utils.Utils.formatDateTime;
+import static com.quickpay.utils.Utils.generateTransactionDescription;
 
 public class Helper {
     public static Account createAccount() {
@@ -42,13 +40,23 @@ public class Helper {
         return userResponse;
     }
 
-    public static TransactionResponse createDepositResponse(Transaction transaction) {
-        return new TransactionResponse(createAccount().getAccountNumber(),
+    public static TransactionResponse createTransactionResponse(Transaction transaction) {
+        return new TransactionResponse(
                 transaction.getTransactionType(),
-                transaction.getNarration(),
+                generateTransactionDescription(transaction.getAmount()),
                 transaction.getAmount(),
-                transaction.getAccountBalance(),
+                transaction.getAccountBalance().add(BigDecimal.valueOf(1000)),
                 formatDateTime(LocalDateTime.now()));
+    }
+
+    public static Transaction createTransaction(String transactionType){
+        BigDecimal amount = new BigDecimal("500");
+        Transaction savedTransaction = new Transaction();
+        savedTransaction.setTransactionType(transactionType);
+        savedTransaction.setNarration(generateTransactionDescription(amount));
+        savedTransaction.setAmount(amount);
+        savedTransaction.setAccountBalance(amount);
+        return savedTransaction;
     }
 
 }

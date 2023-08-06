@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({BadRequestException.class, AccountException.class})
+    @ExceptionHandler({BadRequestException.class, AccountException.class, InsufficientBalanceException.class})
     public ResponseEntity<ResponseDTO> handleException(Exception ex) {
         return ResponseEntity.badRequest().body(new ResponseDTO(false, ex.getMessage()));
     }

@@ -1,19 +1,17 @@
 package com.quickpay.web.response;
 import java.math.BigDecimal;
 
-public record TransactionResponse(String accountNumber,
+public record TransactionResponse(
                                   String transactionType,
                                   String description,
                                   BigDecimal amount,
-                                  BigDecimal newAccountBalance,
+                                  BigDecimal accountBalance,
                                   String transactionDate,
-                                  String sourceAccountNumber,
-                                  String destinationAccountNumber) {
+                                  String to) {
 
-    public TransactionResponse(String accountNumber, String transactionType, String description,
-                               BigDecimal amount, BigDecimal newAccountBalance,
+    public TransactionResponse(String transactionType, String description,
+                               BigDecimal amount, BigDecimal accountBalance,
                                String transactionDate) {
-        this(accountNumber, transactionType, description, amount, newAccountBalance, transactionDate,
-                null, null);
+        this( transactionType, description, amount, accountBalance, transactionDate, null);
     }
 }

@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class Utils {
-    private static final String CURRENCY_NAIRA = "₦";
+    private static final String CURRENCY_NAIRA = "naira";
 
     public static String generateRandomValue(String pad, int length) {
         StringBuilder accountNumberBuilder = new StringBuilder();
@@ -30,7 +30,7 @@ public class Utils {
     }
 
     public static String generateTransactionDescription(BigDecimal depositAmount) {
-        return String.format("Deposit of %s%s made on %s", CURRENCY_NAIRA, depositAmount, formatDateTime(LocalDateTime.now()));
+        return String.format("Deposit of %s %s made on %s", depositAmount, CURRENCY_NAIRA, formatDateTime(LocalDateTime.now()));
     }
 
     public static LocalDateTime convertToLastHourOfDay(LocalDateTime dateTime) {

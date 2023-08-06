@@ -24,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static com.quickpay.Utils.Helper.*;
@@ -83,7 +84,7 @@ class UserServiceImplTest {
         assertEquals(userDTO.name(), newUser.getName());
         assertEquals(userDTO.email(), newUser.getEmail());
         assertEquals(userDTO.bio(), newUser.getBio());
-        assertEquals(0.0, newUser.getBalance());
+        assertEquals(BigDecimal.ZERO, newUser.getBalance());
         assertEquals(10, newUser.getAccountNumber().length());
     }
 
