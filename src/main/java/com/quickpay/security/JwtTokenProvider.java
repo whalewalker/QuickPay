@@ -1,10 +1,10 @@
 package com.quickpay.security;
 
+import com.quickpay.data.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -50,9 +50,9 @@ public class JwtTokenProvider {
                 .parseClaimsJws(jwtToken).getBody();
     }
 
-    public boolean validateToken(String token, UserDetails user) {
-        final String email = extractAccountNumber(token);
-        return (email.equals(user.getUsername()) && !isTokenExpired(token));
+    public boolean validateToken(String token, User user) {
+        final String accountNumber = extractAccountNumber(token);
+        return (accountNumber.equals(user.getUsername()) && !isTokenExpired(token));
     }
 
     public boolean isTokenExpired(String token) {

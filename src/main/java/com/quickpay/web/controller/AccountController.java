@@ -6,11 +6,11 @@ import com.quickpay.data.dto.TransferDTO;
 import com.quickpay.services.AccountService;
 import com.quickpay.web.response.TransactionResponse;
 import com.quickpay.web.response.UserResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Map;
 

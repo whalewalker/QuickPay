@@ -16,6 +16,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper mapper;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
+    private static final String ROLE_NAME = "ROLE_USER";
 
     @Override
     public UserResponse createUser(UserDTO userDTO) throws BadRequestException {
@@ -52,22 +54,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse login(LoginDTO loginDTO) {
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDTO.getAccountNumber(),
-                        loginDTO.getAccountPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = tokenProvider.generateToken(loginDTO.getAccountNumber());
-        return new LoginResponse(token);
+        try {
+            final Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getAccountNumber(),
+                            loginDTO.getAccountPassword()
+                    )
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            final String token = tokenProvider.generateToken(loginDTO.getAccountNumber());
+            return new LoginResponse(token);
+        } catch (BadCredentialsException | IllegalArgumentException ex) {
+            throw new BadRequestException("Invalid credentials");
+        }
     }
+
 
     private User createUser(UserDTO userDTO, Account account) {
         User user = mapper.map(userDTO, User.class);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        Role role = roleRepository.findByName("ROLE_USER");
-        user.setRoles(List.of(role));
+        user.setRoles(List.of(roleRepository.findByName(ROLE_NAME).get()));
         user.setAccount(account);
         return userRepository.save(user);
     }
@@ -81,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
     @PostConstruct
     void setupUserRole(){
-        Role role = new Role("ROLE_USER");
+        Role role = roleRepository.findByName(ROLE_NAME).orElse(new Role(ROLE_NAME));
         roleRepository.save(role);
     }
 }

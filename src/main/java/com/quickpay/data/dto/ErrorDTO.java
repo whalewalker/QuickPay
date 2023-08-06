@@ -1,25 +1,28 @@
 package com.quickpay.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.quickpay.utils.Utils.formatDateTime;
+
 @Data
 public class ErrorDTO {
+    @JsonProperty("isSuccessful")
     private boolean isSuccessful;
     private int status;
     private String message;
-    private LocalDateTime timestamp;
+    private String timestamp;
     private List<ValidationDTO> errors;
-    private String stackTrace;
-    private Object data;
 
     public ErrorDTO(int status, String message) {
         this.isSuccessful = false;
         this.status = status;
         this.message = message;
-        timestamp = LocalDateTime.now();
+        timestamp = formatDateTime(LocalDateTime.now());
     }
 
     public void addValidationError(String field, String message) {

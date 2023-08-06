@@ -5,6 +5,7 @@ import com.quickpay.data.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({BadRequestException.class, AccountException.class, InsufficientBalanceException.class})
+    @ExceptionHandler({BadRequestException.class, AccountException.class, InsufficientBalanceException.class, UsernameNotFoundException.class})
     public ResponseEntity<ResponseDTO> handleException(Exception ex) {
         return ResponseEntity.badRequest().body(new ResponseDTO(false, ex.getMessage()));
     }

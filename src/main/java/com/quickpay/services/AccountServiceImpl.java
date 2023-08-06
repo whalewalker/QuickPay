@@ -152,6 +152,7 @@ public class AccountServiceImpl implements AccountService {
 
         account.setBalance(newBalance);
         Transaction debitTransaction = createTransaction(TransactionType.DEBIT.name(), narration, amount, newBalance);
+        debitTransaction.setAccount(account);
         Transaction savedDebitTransaction = saveTransaction(debitTransaction);
         account.addTransaction(savedDebitTransaction);
     }
@@ -160,9 +161,11 @@ public class AccountServiceImpl implements AccountService {
     private void credit(Account account, BigDecimal amount, String narration) {
         account.setBalance(account.getBalance().add(amount));
         Transaction creditTransaction = createTransaction(TransactionType.CREDIT.name(), narration, amount, account.getBalance());
+        creditTransaction.setAccount(account);
         Transaction savedCreditTransaction = saveTransaction(creditTransaction);
         account.addTransaction(savedCreditTransaction);
     }
+
 
     private Transaction saveTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);

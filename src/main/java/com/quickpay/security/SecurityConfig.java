@@ -24,7 +24,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionMgt -> sessionMgt.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/quick-pay/users/**"))
-                        .permitAll())
+                        .permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/quick-pay/account/**")).hasRole("USER")
+                )
                 .exceptionHandling(exe -> exe.authenticationEntryPoint(unauthorizedHandler))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

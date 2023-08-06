@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import static java.lang.String.format;
 
@@ -16,9 +15,8 @@ import static java.lang.String.format;
 public class CustomUserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    @Transactional
     @Override
-    public User loadUserByUsername(String accountNumber) throws UsernameNotFoundException {
+    public User loadUserByUsername(String accountNumber)  {
         return userRepository.findUserByAccountNumber(accountNumber).orElseThrow(
                 () -> new UsernameNotFoundException(format("User not found with account number %s", accountNumber)));
     }

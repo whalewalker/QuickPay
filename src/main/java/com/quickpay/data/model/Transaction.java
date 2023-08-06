@@ -21,6 +21,7 @@ public class Transaction {
 
     @Column(unique = true, nullable = false)
     private String transactionId;
+
     private String transactionType;
     private String narration;
     private BigDecimal amount;
