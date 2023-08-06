@@ -44,15 +44,15 @@ public class AccountServiceImpl implements AccountService {
         String accountNumber = principal.getName();
         Account accountToFund = findAccountByAccountNumber(accountNumber);
 
-        String description = generateTransactionDescription(depositDTO.amount());
-        credit(accountToFund, depositDTO.amount(), description);
+        String description = generateTransactionDescription(depositDTO.getAmount());
+        credit(accountToFund, depositDTO.getAmount(), description);
 
         saveAccount(accountToFund);
 
         return new TransactionResponse(
                 TransactionType.DEPOSIT.toString(),
                 description,
-                depositDTO.amount(),
+                depositDTO.getAmount(),
                 accountToFund.getBalance(),
                 formatDateTime(LocalDateTime.now()));
     }
@@ -60,10 +60,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public TransactionResponse fundsTransfer(TransferDTO transferDTO, String sourceAccountNumber) {
         Account sourceAccount = findAccountByAccountNumber(sourceAccountNumber);
-        Account destinationAccount = findAccountByAccountNumber(transferDTO.accountNumber());
+        Account destinationAccount = findAccountByAccountNumber(transferDTO.getAccountNumber());
 
-        debit(sourceAccount, transferDTO.amount(), transferDTO.narration());
-        credit(destinationAccount, transferDTO.amount(), transferDTO.narration());
+        debit(sourceAccount, transferDTO.getAmount(), transferDTO.getNarration());
+        credit(destinationAccount, transferDTO.getAmount(), transferDTO.getNarration());
 
         saveAccount(sourceAccount);
         saveAccount(destinationAccount);
@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
         return new TransactionResponse(
                 TransactionType.TRANSFER.toString(),
                 "Wallet-to-wallet transfer",
-                transferDTO.amount(),
+                transferDTO.getAmount(),
                 sourceAccount.getBalance(),
                 formatDateTime(LocalDateTime.now()),
                 destinationAccount.getAccountNumber()
@@ -101,17 +101,17 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> response;
 
         Specification<Transaction> specification = Specification
-                .where(TransactionSpecification.withTransactionId(filterDTO.transactionId()))
-                .and(TransactionSpecification.withBetweenDate(filterDTO.startDate(), filterDTO.endDate()))
-                .and(TransactionSpecification.withTransactionType(filterDTO.transactionType()))
-                .and(TransactionSpecification.withAccount(filterDTO.accountNumber()));
+                .where(TransactionSpecification.withTransactionId(filterDTO.getTransactionId()))
+                .and(TransactionSpecification.withBetweenDate(filterDTO.getStartDate(), filterDTO.getEndDate()))
+                .and(TransactionSpecification.withTransactionType(filterDTO.getTransactionType()))
+                .and(TransactionSpecification.withAccount(filterDTO.getAccountNumber()));
 
         Page<Transaction> page = transactionRepository.findAll(specification,
-                PageRequest.of(filterDTO.page(), filterDTO.size(), Sort.by(Sort.Direction.DESC, "id")));
+                PageRequest.of(filterDTO.getPage(), filterDTO.getSize(), Sort.by(Sort.Direction.DESC, "id")));
 
         response = Map.of(
                 "data", page.getContent(),
-                "draw", filterDTO.draw(),
+                "draw", filterDTO.getDraw(),
                 "recordsTotal", page.getTotalElements(),
                 "recordsFiltered", page.getTotalElements()
         );

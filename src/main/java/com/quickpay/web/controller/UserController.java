@@ -22,13 +22,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDTO> signup(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<ResponseDTO> signup(@RequestBody @Valid UserDTO userDTO) {
         UserResponse response = userService.createUser(userDTO);
         return ResponseEntity.ok(new ResponseDTO(true, "User is successfully created", response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResponseDTO> login( @RequestBody @Valid LoginDTO loginDTO) {
         LoginResponse response = userService.login(loginDTO);
         return ResponseEntity.ok(new ResponseDTO(true, "User is successfully logged in", response ));
     }

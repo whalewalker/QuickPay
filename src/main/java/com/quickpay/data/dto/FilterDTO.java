@@ -1,18 +1,25 @@
 package com.quickpay.data.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
-public record FilterDTO(
-        String transactionType,
-        String transactionId,
-        String accountNumber,
-        LocalDateTime startDate,
-        LocalDateTime endDate,
-        Integer page,
-        Integer size,
-        Integer draw,
-        int start,
-        int length,
-        Integer startPage
-) {}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class FilterDTO {
+    private String transactionType;
+    private String transactionId;
+    private String accountNumber;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private Integer page;
+    private Integer size;
+    private Integer draw;
+    private int start;
+    private int length;
+    private Integer startPage;
+}
 

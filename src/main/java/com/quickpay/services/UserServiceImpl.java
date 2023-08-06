@@ -6,11 +6,13 @@ import com.quickpay.data.model.Account;
 import com.quickpay.data.model.Role;
 import com.quickpay.data.model.User;
 import com.quickpay.data.repository.AccountRepository;
+import com.quickpay.data.repository.RoleRepository;
 import com.quickpay.data.repository.UserRepository;
 import com.quickpay.security.JwtTokenProvider;
 import com.quickpay.web.exception.BadRequestException;
 import com.quickpay.web.response.LoginResponse;
 import com.quickpay.web.response.UserResponse;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +32,7 @@ import static com.quickpay.utils.Utils.generateRandomValue;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
+    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ModelMapper mapper;
     private final JwtTokenProvider tokenProvider;
@@ -37,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserDTO userDTO) throws BadRequestException {
-        if (userRepository.findByEmail(userDTO.email()).isPresent()) {
+        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
             throw new BadRequestException("Email is already registered");
         }
         Account account = createAccount();
@@ -51,19 +54,20 @@ public class UserServiceImpl implements UserService {
     public LoginResponse login(LoginDTO loginDTO) {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginDTO.accountNumber(),
-                        loginDTO.accountPassword()
+                        loginDTO.getAccountNumber(),
+                        loginDTO.getAccountPassword()
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = tokenProvider.generateToken(loginDTO.accountNumber());
+        final String token = tokenProvider.generateToken(loginDTO.getAccountNumber());
         return new LoginResponse(token);
     }
 
     private User createUser(UserDTO userDTO, Account account) {
         User user = mapper.map(userDTO, User.class);
-        user.setPassword(passwordEncoder.encode(userDTO.password()));
-        user.setRoles(List.of(new Role("ROLE_USER")));
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        Role role = roleRepository.findByName("ROLE_USER");
+        user.setRoles(List.of(role));
         user.setAccount(account);
         return userRepository.save(user);
     }
@@ -73,5 +77,11 @@ public class UserServiceImpl implements UserService {
         account.setAccountNumber(generateRandomValue("", 10));
         account.setBalance(BigDecimal.ZERO);
         return accountRepository.save(account);
+    }
+
+    @PostConstruct
+    void setupUserRole(){
+        Role role = new Role("ROLE_USER");
+        roleRepository.save(role);
     }
 }
