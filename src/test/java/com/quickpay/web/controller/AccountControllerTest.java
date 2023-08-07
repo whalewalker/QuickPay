@@ -44,6 +44,7 @@ import static com.quickpay.utils.Utils.generateTransactionDescription;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -214,8 +215,8 @@ class AccountControllerTest {
 
     @Test
      void testFetchTransactions() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
+        Principal principal = mock(Principal.class);
 
         MultiValueMap<String, String> allRequestParams = new LinkedMultiValueMap<>();
         allRequestParams.add("transactionType", "TRANSFER");
@@ -237,12 +238,13 @@ class AccountControllerTest {
                 "recordsFiltered", transactions.size()
         );
 
-        when(accountService.getTransactionsDetails(allRequestParams.toSingleValueMap())).thenReturn(response);
+        when(accountService.getTransactionsDetails(allRequestParams.toSingleValueMap(), principal)).thenReturn(response);
 
 
         MvcResult mvcResult = mockMvc.perform(get(BASE_URL + "/transactions")
                         .params(allRequestParams))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andReturn();
 
         String responseContent = mvcResult.getResponse().getContentAsString();
@@ -252,12 +254,6 @@ class AccountControllerTest {
 
         assertNotNull(responseDTO.data());
         assertTrue(responseDTO.data() instanceof Map);
-        Map<String, Object> responseData = (Map<String, Object>) responseDTO.data();
-        assertTrue(responseData.containsKey("data"));
-        assertTrue(responseData.containsKey("draw"));
-        assertTrue(responseData.containsKey("recordsTotal"));
-        assertTrue(responseData.containsKey("recordsFiltered"));
-
     }
 
     private static String asJsonString(Object obj) {

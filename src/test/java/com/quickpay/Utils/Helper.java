@@ -20,10 +20,10 @@ public class Helper {
     public static User createUser(UserDTO userDTO) {
         User user = new User();
         user.setId(1L);
-        user.setName(userDTO.name());
-        user.setEmail(userDTO.email());
-        user.setPassword(userDTO.password());
-        user.setBio(userDTO.bio());
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+        user.setBio(userDTO.getBio());
         user.setRoles(List.of(new Role("ROLE_USER")));
         user.setAccount(createAccount());
 

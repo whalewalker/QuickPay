@@ -3,8 +3,10 @@ package com.quickpay.services;
 import com.quickpay.data.dto.LoginDTO;
 import com.quickpay.data.dto.UserDTO;
 import com.quickpay.data.model.Account;
+import com.quickpay.data.model.Role;
 import com.quickpay.data.model.User;
 import com.quickpay.data.repository.AccountRepository;
+import com.quickpay.data.repository.RoleRepository;
 import com.quickpay.data.repository.UserRepository;
 import com.quickpay.security.CustomUserDetailService;
 import com.quickpay.security.JwtTokenProvider;
@@ -40,6 +42,9 @@ class UserServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
     private AccountRepository accountRepository;
 
     @Mock
@@ -71,7 +76,8 @@ class UserServiceImplTest {
 
     @Test
     void testSignup_SuccessfulSignup() {
-        when(userRepository.findByEmail(userDTO.email())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.empty());
+        when(roleRepository.findByName(anyString())).thenReturn(Optional.of(new Role("role")));
         when(mapper.map(userDTO, User.class)).thenReturn(user);
         when(passwordEncoder.encode(anyString())).thenReturn("Encrypted password");
         when(accountRepository.save(any(Account.class))).thenReturn(createAccount());
@@ -81,16 +87,16 @@ class UserServiceImplTest {
         UserResponse newUser = userService.createUser(userDTO);
 
         assertNotNull(newUser);
-        assertEquals(userDTO.name(), newUser.getName());
-        assertEquals(userDTO.email(), newUser.getEmail());
-        assertEquals(userDTO.bio(), newUser.getBio());
+        assertEquals(userDTO.getName(), newUser.getName());
+        assertEquals(userDTO.getEmail(), newUser.getEmail());
+        assertEquals(userDTO.getBio(), newUser.getBio());
         assertEquals(BigDecimal.ZERO, newUser.getBalance());
         assertEquals(10, newUser.getAccountNumber().length());
     }
 
     @Test
     void testSignup_EmailAlreadyRegistered() {
-        when(userRepository.findByEmail(userDTO.email())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.of(user));
         assertThrows(BadRequestException.class, () -> userService.createUser(userDTO));
     }
 
@@ -98,20 +104,20 @@ class UserServiceImplTest {
     void testLogin_SuccessfulLogin()  {
         LoginDTO loginDTO = new LoginDTO("0123456789", "password123");
 
-        TestingAuthenticationToken testingAuthenticationToken = new TestingAuthenticationToken(loginDTO.accountNumber(),
-                loginDTO.accountPassword());
+        TestingAuthenticationToken testingAuthenticationToken = new TestingAuthenticationToken(loginDTO.getAccountNumber(),
+                loginDTO.getAccountPassword());
         testingAuthenticationToken.setAuthenticated(true);
         testingAuthenticationToken.setDetails(loginDTO);
 
         when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDTO.accountNumber(), loginDTO.accountPassword())
+                loginDTO.getAccountNumber(), loginDTO.getAccountPassword())
         )).thenReturn(testingAuthenticationToken);
         SecurityContextHolder.getContext().setAuthentication(testingAuthenticationToken);
 
         when(tokenProvider.generateToken(anyString())).thenReturn("generated_token");
 
         LoginResponse loginResponse = userService.login(loginDTO);
-        verify(tokenProvider, times(1)).generateToken(loginDTO.accountNumber());
+        verify(tokenProvider, times(1)).generateToken(loginDTO.getAccountNumber());
 
         assertNotNull(loginResponse);
         assertEquals("generated_token", loginResponse.accessToken());

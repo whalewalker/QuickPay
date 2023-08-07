@@ -19,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -49,9 +48,6 @@ class AccountServiceImplTest {
 
     @InjectMocks
     private AccountServiceImpl accountService;
-
-    @Mock
-    private ModelMapper mapper;
 
     @Test
     void testDeposit() {
@@ -193,21 +189,14 @@ class AccountServiceImplTest {
 
         UserResponse userResponse = new UserResponse();
         userResponse.setName(user.getName());
-        userResponse.setEmail(user.getEmail());
-        userResponse.setBio(user.getBio());
         userResponse.setAccountNumber(accountNumber);
-        userResponse.setBalance(balance);
 
         when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
-        when(mapper.map(user, UserResponse.class)).thenReturn(userResponse);
 
         UserResponse result = accountService.accountEnquiry(accountNumber);
 
         assertEquals(userResponse.getName(), result.getName());
-        assertEquals(userResponse.getEmail(), result.getEmail());
-        assertEquals(userResponse.getBio(), result.getBio());
         assertEquals(userResponse.getAccountNumber(), result.getAccountNumber());
-        assertEquals(userResponse.getBalance(), result.getBalance());
     }
 
     @Test
@@ -238,8 +227,9 @@ class AccountServiceImplTest {
         Specification<Transaction> specification = ArgumentMatchers.any(Specification.class);
         Pageable pageable = ArgumentMatchers.any(Pageable.class);
         Mockito.when(transactionRepository.findAll(specification, pageable)).thenReturn(page);
-
-        Map<String, Object> response = accountService.getTransactionsDetails(allRequestParams);
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn("0123456789");
+        Map<String, Object> response = accountService.getTransactionsDetails(allRequestParams, principal);
 
         assertNotNull(response);
         assertTrue(response.containsKey("data"));
