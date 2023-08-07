@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class TransferDTO {
     @NotBlank(message = "Account Number is required")
-    private String accountNumber;
+    private String beneficiaryAccountNumber;
 
     @NotNull(message = "Amount cannot be null")
     @Min(value = 1, message = "Deposit amount cannot be less than 1.00")

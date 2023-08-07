@@ -40,8 +40,8 @@ public class AccountController {
     }
 
     @GetMapping("/transactions")
-    public ResponseEntity<ResponseDTO> fetchTransactions(@RequestParam Map<String, String> allRequestParams) {
-        Map<String, Object> response = accountService.getTransactionsDetails(allRequestParams);
+    public ResponseEntity<ResponseDTO> fetchTransactions(@RequestParam Map<String, String> allRequestParams, Principal principal) {
+        Map<String, Object> response = accountService.getTransactionsDetails(allRequestParams, principal);
         return  ResponseEntity.ok(new ResponseDTO( true, RESPONSE_MESSAGE, response));
     }
 }

@@ -16,7 +16,6 @@ import com.quickpay.web.response.TransactionResponse;
 import com.quickpay.web.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -36,7 +35,6 @@ import static com.quickpay.utils.Utils.*;
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
-    private final ModelMapper mapper;
 
 
     @Override
@@ -60,7 +58,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public TransactionResponse fundsTransfer(TransferDTO transferDTO, String sourceAccountNumber) {
         Account sourceAccount = findAccountByAccountNumber(sourceAccountNumber);
-        Account destinationAccount = findAccountByAccountNumber(transferDTO.getAccountNumber());
+        Account destinationAccount = findAccountByAccountNumber(transferDTO.getBeneficiaryAccountNumber());
+
+        if (sourceAccountNumber.equals(transferDTO.getBeneficiaryAccountNumber())) {
+            throw new AccountException("Cannot transfer to the same account");
+        }
 
         debit(sourceAccount, transferDTO.getAmount(), transferDTO.getNarration());
         credit(destinationAccount, transferDTO.getAmount(), transferDTO.getNarration());
@@ -78,12 +80,13 @@ public class AccountServiceImpl implements AccountService {
         );
     }
 
+
     @Override
-    public Map<String, Object> getTransactionsDetails(Map<String, String> allRequestParams) {
+    public Map<String, Object> getTransactionsDetails(Map<String, String> allRequestParams, Principal principal) {
         FilterDTO filterDTO = new FilterDTO(
                 getValueOrDefault(allRequestParams, "transactionType"),
                 getValueOrDefault(allRequestParams, "transactionId"),
-                getValueOrDefault(allRequestParams, "accountNumber"),
+                principal.getName(),
                 parseLocalDateTime(allRequestParams.get("startDate")),
                 parseLocalDateTime(allRequestParams.get("endDate")),
                 Integer.parseInt(allRequestParams.getOrDefault("page", "0")),
@@ -122,9 +125,9 @@ public class AccountServiceImpl implements AccountService {
     public UserResponse accountEnquiry(String accountNumber) {
         Account account = findAccountByAccountNumber(accountNumber);
         User user = account.getUser();
-        UserResponse userResponse = mapper.map(user, UserResponse.class);
+        UserResponse userResponse = new UserResponse();
+        userResponse.setName(user.getName());
         userResponse.setAccountNumber(accountNumber);
-        userResponse.setBalance(account.getBalance());
         return userResponse;
     }
 

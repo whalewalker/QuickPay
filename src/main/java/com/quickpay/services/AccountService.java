@@ -13,7 +13,7 @@ public interface AccountService {
 
     TransactionResponse fundsTransfer(TransferDTO transferDTO, String sourceAccountNumber);
 
-    Map<String, Object> getTransactionsDetails(Map<String, String> allRequestParams);
+    Map<String, Object> getTransactionsDetails(Map<String, String> allRequestParams, Principal principal);
 
     UserResponse accountEnquiry(String accountNumber);
 }
