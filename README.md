@@ -1,11 +1,12 @@
 # QuickPay
 QuickPay is a digital wallet system designed to facilitate quick and convenient financial transactions. It allows users to store their money digitally and perform various financial operations such as making payments, transferring funds, checking balances, and more.
-***The API documentation is hosted [HERE](https://documenter.getpostman.com/view/18385063/2s9XxySZiY#1d0ea8d9-db20-4868-a83b-4f5f03d3be98)***
+***The API documentation is hosted [HERE](https://documenter.getpostman.com/view/18385063/2s9XxySZiY#1d0ea8d9-db20-4868-a83b-4f5f03d3be98)*** and it is currently on production 
 
 
 ## Setting up the Spring Boot Application with Gradle
 
-This is a guide to setting up the Spring Boot application with Maven.
+This is a guide to setting up the Spring Boot application with Maven. <br>
+This application has been thoroughly tested to ensure 100% functionality. Please review the test command for testing purposes.
 
 ## Prerequisites
 
@@ -46,7 +47,7 @@ This is a guide to setting up the Spring Boot application with Maven.
    ```bash
    mvn clean 
     ```
-   
+
 6. Test the project using Maven.
    ```bash
    mvn test 
