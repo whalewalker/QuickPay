@@ -42,15 +42,21 @@ This is a guide to setting up the Spring Boot application with Maven.
     cd project_directory/
     ```
 
-5. Build the project using Gradle.
+5. Build the project using Maven.
    ```bash
    mvn clean 
     ```
-6. Run the project 
+   
+6. Test the project using Maven.
+   ```bash
+   mvn test 
+    ```
+
+7. Run the project 
    ```bash
    mvn spring-boot:run
     ```
-7. The Spring Boot application should start running and you should be able to access it at http://localhost:8080
+8. The Spring Boot application should start running and you should be able to access it at http://localhost:8080
 
 ## Functional requirement
 1. User should be able to sign up with their name, email, password and bio
