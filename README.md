@@ -1,6 +1,6 @@
 # QuickPay
 QuickPay is a digital wallet system designed to facilitate quick and convenient financial transactions. It allows users to store their money digitally and perform various financial operations such as making payments, transferring funds, checking balances, and more.
-***The API documentation is hosted [here](https://documenter.getpostman.com/view/18385063/2s9XxySZiY)***
+***The API documentation is hosted [HERE](https://documenter.getpostman.com/view/18385063/2s9XxySZiY#1d0ea8d9-db20-4868-a83b-4f5f03d3be98)***
 
 
 ## Setting up the Spring Boot Application with Gradle
