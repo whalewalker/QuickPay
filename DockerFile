@@ -7,7 +7,7 @@ LABEL mentainer="ohida2001@gmail.com"
 WORKDIR /app
 
 # Copy the executable JAR file into the container at /app
-COPY target/quick-pay-0.0.1-SNAPSHOT.jar /app/quick-pay.jar
+COPY target/QuickPay-0.0.1-SNAPSHOT.jar /app/quick-pay.jar
 
 # Expose the port your Spring Boot application is listening on
 EXPOSE 8080
