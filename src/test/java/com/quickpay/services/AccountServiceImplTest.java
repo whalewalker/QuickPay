@@ -127,13 +127,13 @@ class AccountServiceImplTest {
 
         TransactionResponse expectedResponse = new TransactionResponse(
                 TransactionType.TRANSFER.toString(),
-                "Wallet-to-wallet transfer",
+                "Wallet-to-wallet processInterTransfer",
                 amount,
                 new BigDecimal("500.00"),
                 formatDateTime(LocalDateTime.now()),
                 destinationAccountNumber);
 
-        TransactionResponse actualResponse = accountService.fundsTransfer(transferDTO, sourceAccountNumber);
+        TransactionResponse actualResponse = accountService.processTransfer(transferDTO, sourceAccountNumber);
 
         assertEquals(expectedResponse.transactionType(), actualResponse.transactionType());
         assertEquals(expectedResponse.description(), actualResponse.description());
@@ -168,7 +168,7 @@ class AccountServiceImplTest {
         when(accountRepository.findByAccountNumber(sourceAccountNumber)).thenReturn(Optional.of(sourceAccount));
         when(accountRepository.findByAccountNumber(destinationAccountNumber)).thenReturn(Optional.of(destinationAccount));
 
-        InsufficientBalanceException insufficientBalanceException = assertThrows(InsufficientBalanceException.class, () -> accountService.fundsTransfer(transferDTO, sourceAccountNumber));
+        InsufficientBalanceException insufficientBalanceException = assertThrows(InsufficientBalanceException.class, () -> accountService.processTransfer(transferDTO, sourceAccountNumber));
         assertEquals("Insufficient balance to perform the debit operation", insufficientBalanceException.getMessage());
     }
 

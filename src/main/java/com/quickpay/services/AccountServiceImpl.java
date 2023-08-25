@@ -56,12 +56,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public TransactionResponse fundsTransfer(TransferDTO transferDTO, String sourceAccountNumber) {
+    public TransactionResponse processTransfer(TransferDTO transferDTO, String sourceAccountNumber) {
         Account sourceAccount = findAccountByAccountNumber(sourceAccountNumber);
         Account destinationAccount = findAccountByAccountNumber(transferDTO.getBeneficiaryAccountNumber());
 
         if (sourceAccountNumber.equals(transferDTO.getBeneficiaryAccountNumber())) {
-            throw new AccountException("Cannot transfer to the same account");
+            throw new AccountException("Cannot processInterTransfer to the same account");
         }
 
         debit(sourceAccount, transferDTO.getAmount(), transferDTO.getNarration());
@@ -72,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
 
         return new TransactionResponse(
                 TransactionType.TRANSFER.toString(),
-                "Wallet-to-wallet transfer",
+                "Wallet-to-wallet processInterTransfer",
                 transferDTO.getAmount(),
                 sourceAccount.getBalance(),
                 formatDateTime(LocalDateTime.now()),

@@ -11,7 +11,7 @@ import java.util.Map;
 public interface AccountService {
     TransactionResponse deposit(DepositDTO depositDTO, Principal principal);
 
-    TransactionResponse fundsTransfer(TransferDTO transferDTO, String sourceAccountNumber);
+    TransactionResponse processTransfer(TransferDTO transferDTO, String sourceAccountNumber);
 
     Map<String, Object> getTransactionsDetails(Map<String, String> allRequestParams, Principal principal);
 

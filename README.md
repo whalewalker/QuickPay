@@ -32,7 +32,7 @@ This application has been thoroughly tested to ensure 100% functionality. Please
 3. Configure database username and password
 
      ```properties
-       # src/main/resources/application.properties
+       # src/main/resources/application.yml
       spring.datasource.url=jdbc:mysql://localhost:3306/quick_pay
       spring.datasource.username=<YOUR_DB_USERNAME>
       spring.datasource.password=<YOUR_DB_PASSWORD>
@@ -63,11 +63,12 @@ This application has been thoroughly tested to ensure 100% functionality. Please
 1. User should be able to sign up with their name, email, password and bio
 2. An account number should be generated for the user.
 3. Their account must be authenticated before they can perform any action.
-4. They should be able to perform local fund transfers.
-5. They should be able to perform a local name enquiry on another customer’s
+4. They should be able to perform inter-bank fund transfers.
+5. They should be able to perform intra-bank fund transfer
+6. They should be able to perform a local name enquiry on another customer’s
 wallet
-6. They should be able to check their balances.
-7. They should be able to view their transactions
+7. They should be able to check their balances.
+8. They should be able to view their transactions
 
 ## Non-Functional Requirements
 The following non-functional requirements must be met:

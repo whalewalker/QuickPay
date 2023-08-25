@@ -4,6 +4,7 @@ import com.quickpay.data.dto.DepositDTO;
 import com.quickpay.data.dto.ResponseDTO;
 import com.quickpay.data.dto.TransferDTO;
 import com.quickpay.services.AccountService;
+import com.quickpay.services.TransferService;
 import com.quickpay.web.response.TransactionResponse;
 import com.quickpay.web.response.UserResponse;
 import jakarta.validation.Valid;
@@ -15,21 +16,28 @@ import java.security.Principal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/v1/quick-pay/account")
+@RequestMapping("api/v1/account")
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
+    private final TransferService transferService;
     private static final String RESPONSE_MESSAGE = "Successful";
 
-    @PostMapping("/deposit")
+    @PostMapping("inter/deposit")
     public ResponseEntity<ResponseDTO> deposit(@RequestBody @Valid DepositDTO depositDTO, Principal principal) {
         TransactionResponse response = accountService.deposit(depositDTO, principal);
         return  ResponseEntity.ok(new ResponseDTO( true, RESPONSE_MESSAGE, response));
     }
 
-    @PostMapping("/transfer")
-    public ResponseEntity<ResponseDTO> transfer(@RequestBody @Valid TransferDTO transferDTO, Principal principal) {
-        TransactionResponse response = accountService.fundsTransfer( transferDTO,  principal.getName());
+    @PostMapping("inter/transfer")
+    public ResponseEntity<ResponseDTO> processInterTransfer(@RequestBody @Valid TransferDTO transferDTO, Principal principal) {
+        TransactionResponse response = accountService.processTransfer( transferDTO,  principal.getName());
+        return  ResponseEntity.ok(new ResponseDTO( true, RESPONSE_MESSAGE, response));
+    }
+
+    @PostMapping("intra/transfer")
+    public ResponseEntity<ResponseDTO> processIntraTransfer(@RequestBody @Valid TransferDTO transferDTO) {
+        TransactionResponse response = transferService.processTransfer( transferDTO);
         return  ResponseEntity.ok(new ResponseDTO( true, RESPONSE_MESSAGE, response));
     }
 

@@ -55,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(AccountController.class)
 @WithMockUser
-@TestPropertySource(locations = "classpath:application.properties")
+@TestPropertySource(locations = "classpath:application.yml")
 class AccountControllerTest {
 
     @MockBean
@@ -133,14 +133,14 @@ class AccountControllerTest {
 
         TransactionResponse expectedResponse = new TransactionResponse(
                 TransactionType.TRANSFER.toString(),
-                "Wallet-to-wallet transfer",
+                "Wallet-to-wallet processInterTransfer",
                 amount,
                 new BigDecimal("1000.0"),
                 formatDateTime(LocalDateTime.now()),
                 destinationAccountNumber
         );
 
-        when(accountService.fundsTransfer(any(TransferDTO.class), eq(sourceAccountNumber))).thenReturn(expectedResponse);
+        when(accountService.processTransfer(any(TransferDTO.class), eq(sourceAccountNumber))).thenReturn(expectedResponse);
 
         MvcResult mvcResult = mockMvc.perform(post(BASE_URL + "/transfer")
                         .contentType(MediaType.APPLICATION_JSON)

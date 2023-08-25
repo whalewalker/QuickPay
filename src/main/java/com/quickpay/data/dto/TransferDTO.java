@@ -21,4 +21,6 @@ public class TransferDTO {
     private BigDecimal amount;
 
     private String narration;
+    private String bankCode;
+    private String bankName;
 }

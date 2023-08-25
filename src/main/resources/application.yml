@@ -1,0 +1,34 @@
+server:
+  servlet:
+    context-path: /quickpay
+
+spring:
+  datasource:
+    url: jdbc:mysql://containers-us-west-136.railway.app:6498/railway
+    username: root
+    password: A0aACrdbVqYP3NS52mXx
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+# JWT Configuration
+jwt:
+  secret: yourSecretKeyHere
+  expiration: 86400
+
+# CLIENT CONFIG
+flutterwave:
+  base-url: https://api.flutterwave.com
+  secret-key: FLWSECK_TEST-3d5130b425b3ea4032a5d0810284103b-X
+
+paystack:
+  base-url: https://api.paystack.co
+  secret-key: sk_test_5683a965c1b4317a73018e7ffeee70af2bf09835
+
+monify:
+  base-url: https://sandbox.monnify.com
+  secret-key: W2T84GLUW7PSY4U7YXEMNSXEKMK3317N
+
+
+
