@@ -1,6 +1,13 @@
 package com.quickpay.utils;
 
+import com.quickpay.data.dto.TransactionDTO;
+import com.quickpay.data.dto.TransferDTO;
+import com.quickpay.data.model.Transaction;
+import com.quickpay.data.model.TransactionType;
+import com.quickpay.web.request.MonifyTransferRequest;
+import com.quickpay.web.response.MonifyTransferResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,6 +21,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class Utils {
     private static final String CURRENCY_NAIRA = "naira";
+    private static final String SOURCE_ACCOUNT = "3934178936";
+    private static final ModelMapper mapper = new ModelMapper();
 
     public static String generateRandomValue(String pad, int length) {
         StringBuilder accountNumberBuilder = new StringBuilder();
@@ -63,4 +72,36 @@ public class Utils {
             return null;
         }
     }
+
+    public static MonifyTransferRequest monifyRequestMapper(TransferDTO transferDTO){
+        return MonifyTransferRequest.builder()
+                .currency("NGN")
+                .reference(generateRandomValue("REF", 12))
+                .narration(transferDTO.getNarration())
+                .destinationAccountNumber(transferDTO.getBeneficiaryAccountNumber())
+                .destinationBankCode(transferDTO.getBankCode())
+                .sourceAccountNumber(SOURCE_ACCOUNT)
+                .amount(transferDTO.getAmount().intValue())
+                .build();
+    }
+
+    public static TransactionDTO monifyResponseMapper(MonifyTransferResponse response){
+        return TransactionDTO.builder()
+                .transactionType(TransactionType.TRANSFER)
+                .amount(BigDecimal.valueOf(response.getData().getAmount()))
+                .narration(response.getData().getNarration())
+                .responseCode(response.getResponseCode())
+                .responseMessage(response.getResponseMessage())
+                .bankName(response.getData().getBankName())
+                .bankCode(response.getData().getBankCode())
+                .accountNumber(response.getData().getAccountNumber())
+                .build();
+    }
+
+    public static  Transaction createTransaction(TransactionDTO transactionDTO) {
+        Transaction transaction =  mapper.map(transactionDTO, Transaction.class);
+        transaction.setTransactionId(generateRandomValue("TT", 12));
+        return transaction;
+    }
+
 }

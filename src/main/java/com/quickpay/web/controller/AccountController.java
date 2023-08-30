@@ -3,6 +3,7 @@ package com.quickpay.web.controller;
 import com.quickpay.data.dto.DepositDTO;
 import com.quickpay.data.dto.ResponseDTO;
 import com.quickpay.data.dto.TransferDTO;
+import com.quickpay.data.model.Transaction;
 import com.quickpay.services.AccountService;
 import com.quickpay.services.TransferService;
 import com.quickpay.web.response.TransactionResponse;
@@ -16,7 +17,7 @@ import java.security.Principal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/v1/account")
+@RequestMapping("quickpay/api/v1/account")
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
@@ -37,7 +38,7 @@ public class AccountController {
 
     @PostMapping("intra/transfer")
     public ResponseEntity<ResponseDTO> processIntraTransfer(@RequestBody @Valid TransferDTO transferDTO) {
-        TransactionResponse response = transferService.processTransfer( transferDTO);
+        Transaction response = transferService.processTransfer( transferDTO);
         return  ResponseEntity.ok(new ResponseDTO( true, RESPONSE_MESSAGE, response));
     }
 

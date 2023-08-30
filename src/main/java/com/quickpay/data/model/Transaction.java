@@ -2,9 +2,11 @@ package com.quickpay.data.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,6 +17,8 @@ import java.time.LocalDateTime;
 @Table(name = "transactions")
 @Getter
 @Setter
+@Jacksonized
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +27,18 @@ public class Transaction {
     @Column(unique = true, nullable = false)
     private String transactionId;
 
-    private String transactionType;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
     private String narration;
     private BigDecimal amount;
     private BigDecimal accountBalance;
+
+    private String responseCode;
+    private String responseMessage;
+    private String accountNumber;
+    private String bankName;
+    private String bankCode;
+    private String processor = "LOCAL";
 
     @ManyToOne
     @JsonIgnore

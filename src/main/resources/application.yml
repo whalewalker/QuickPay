@@ -1,12 +1,8 @@
-server:
-  servlet:
-    context-path: /quickpay
-
 spring:
   datasource:
-    url: jdbc:mysql://containers-us-west-136.railway.app:6498/railway
+    url: jdbc:mysql://localhost:3306/quick_pay
     username: root
-    password: A0aACrdbVqYP3NS52mXx
+    password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -31,4 +27,7 @@ monify:
   secret-key: W2T84GLUW7PSY4U7YXEMNSXEKMK3317N
 
 
-
+  #datasource:
+  #  url: jdbc:mysql://containers-us-west-136.railway.app:6498/railway
+  #  username: root
+  #  password: A0aACrdbVqYP3NS52mXxserver:

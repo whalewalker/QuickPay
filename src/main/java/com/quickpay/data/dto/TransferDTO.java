@@ -23,4 +23,10 @@ public class TransferDTO {
     private String narration;
     private String bankCode;
     private String bankName;
+
+    public TransferDTO(String beneficiaryAccountNumber, BigDecimal amount, String narration) {
+        this.beneficiaryAccountNumber = beneficiaryAccountNumber;
+        this.amount = amount;
+        this.narration = narration;
+    }
 }

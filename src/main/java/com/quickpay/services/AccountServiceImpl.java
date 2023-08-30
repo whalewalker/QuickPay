@@ -2,6 +2,7 @@ package com.quickpay.services;
 
 import com.quickpay.data.dto.DepositDTO;
 import com.quickpay.data.dto.FilterDTO;
+import com.quickpay.data.dto.TransactionDTO;
 import com.quickpay.data.dto.TransferDTO;
 import com.quickpay.data.model.Account;
 import com.quickpay.data.model.Transaction;
@@ -27,6 +28,8 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static com.quickpay.data.model.TransactionType.CREDIT;
+import static com.quickpay.data.model.TransactionType.DEBIT;
 import static com.quickpay.utils.Utils.*;
 
 @Slf4j
@@ -136,16 +139,6 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new AccountException("No account found with that account number: " + accountNumber));
     }
 
-    private Transaction createTransaction(String transactionType, String narration, BigDecimal amount, BigDecimal accountBalance) {
-        Transaction transaction = new Transaction();
-        transaction.setTransactionType(transactionType);
-        transaction.setNarration(narration);
-        transaction.setAmount(amount);
-        transaction.setAccountBalance(accountBalance);
-        transaction.setTransactionId(generateRandomValue("TT", 12));
-        return transaction;
-    }
-
     private void debit(Account account, BigDecimal amount, String narration) {
         BigDecimal newBalance = account.getBalance().subtract(amount);
 
@@ -154,7 +147,12 @@ public class AccountServiceImpl implements AccountService {
         }
 
         account.setBalance(newBalance);
-        Transaction debitTransaction = createTransaction(TransactionType.DEBIT.name(), narration, amount, newBalance);
+        Transaction debitTransaction = createTransaction(TransactionDTO.builder()
+                .transactionType(DEBIT)
+                .narration(narration)
+                .amount(amount)
+                .accountBalance(newBalance)
+                .build());
         debitTransaction.setAccount(account);
         Transaction savedDebitTransaction = saveTransaction(debitTransaction);
         account.addTransaction(savedDebitTransaction);
@@ -163,7 +161,13 @@ public class AccountServiceImpl implements AccountService {
 
     private void credit(Account account, BigDecimal amount, String narration) {
         account.setBalance(account.getBalance().add(amount));
-        Transaction creditTransaction = createTransaction(TransactionType.CREDIT.name(), narration, amount, account.getBalance());
+        Transaction creditTransaction = createTransaction(
+                TransactionDTO.builder()
+                        .transactionType(CREDIT)
+                        .narration(narration)
+                        .amount(amount)
+                        .accountBalance(account.getBalance())
+                        .build());
         creditTransaction.setAccount(account);
         Transaction savedCreditTransaction = saveTransaction(creditTransaction);
         account.addTransaction(savedCreditTransaction);

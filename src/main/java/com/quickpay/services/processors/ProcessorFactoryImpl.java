@@ -58,6 +58,8 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
             case MONIFY -> new MonifyProcessor(monifyClient);
             case FLUTTERWAVE -> new FlutterwaveProcessor(flutterwaveClient);
             case PAYSTACK -> new PaystackProcessor(paystackClient);
+            default -> throw new IllegalArgumentException("Unsupported processor: " + processor);
         };
     }
+
 }

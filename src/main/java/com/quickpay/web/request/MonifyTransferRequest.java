@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Value;
 
 @Value
-@Builder(toBuilder = true)
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MonifyTransferRequest {
     @JsonProperty("amount")

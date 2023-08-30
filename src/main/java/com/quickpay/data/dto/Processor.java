@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Getter
 public enum Processor {
-    FLUTTERWAVE("Flutterwave", 3, 1),
-    MONIFY("Monify", 2, 2),
-    PAYSTACK("Paystack", 5, 3);
+    FLUTTERWAVE("Flutterwave", 0, 0),
+    MONIFY("Monify", 7, 7),
+    PAYSTACK("Paystack", 0, 0);
 
     private final String description;
     private final int weight;

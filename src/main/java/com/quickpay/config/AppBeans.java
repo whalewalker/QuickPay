@@ -1,6 +1,7 @@
 package com.quickpay.config;
 
 import com.quickpay.security.CustomUserDetailService;
+import io.github.resilience4j.retry.RetryRegistry;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
@@ -47,6 +48,11 @@ public class AppBeans {
         impl.setUserDetailsService(customUserDetailService);
         impl.setHideUserNotFoundExceptions(false) ;
         return impl ;
+    }
+
+    @Bean
+    public RetryRegistry retryRegistry() {
+        return RetryRegistry.ofDefaults();
     }
 
 

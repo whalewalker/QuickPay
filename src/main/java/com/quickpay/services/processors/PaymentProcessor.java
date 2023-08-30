@@ -1,8 +1,9 @@
 package com.quickpay.services.processors;
 
+import com.quickpay.data.dto.TransactionDTO;
 import com.quickpay.data.dto.TransferDTO;
-import com.quickpay.web.response.TransactionResponse;
+import io.github.resilience4j.retry.Retry;
 
 public interface PaymentProcessor {
-    TransactionResponse processTransfer(TransferDTO transferDTO);
+    TransactionDTO processTransfer(TransferDTO transferDTO, Retry retry);
 }
